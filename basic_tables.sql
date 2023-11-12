@@ -16,18 +16,15 @@ CREATE Table attends(
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE teacher_message (
-    message_id INT AUTO_INCREMENT,
     course_id VARCHAR(8),
+    date_added DATETIME,
     message TEXT,
-    PRIMARY KEY (message_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 
 CREATE TABLE links_of_zoom (
-    link_id INT AUTO_INCREMENT,
     course_id VARCHAR(8),
     link VARCHAR(255),
-    PRIMARY KEY (link_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 
@@ -39,11 +36,10 @@ CREATE TABLE tutorial_lecture_notes (
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE course_schedule (
-    schedule_id INT AUTO_INCREMENT,
     course_id VARCHAR(8),
-    course_time TIME,
-    course_date DATE,
-    PRIMARY KEY (schedule_id),
+    course_start_time TIME,
+    course_end_time TIME,
+    course_day TEXT,
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE timetable (
