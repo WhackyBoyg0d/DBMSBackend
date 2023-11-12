@@ -36,6 +36,7 @@ CREATE TABLE tutorial_lecture_notes (
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE course_schedule (
+    schedule_id INT AUTO_INCREMENT,
     course_id VARCHAR(8),
     course_start_time TIME,
     course_end_time TIME,
