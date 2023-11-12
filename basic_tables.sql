@@ -41,6 +41,7 @@ CREATE TABLE course_schedule (
     course_start_time TIME,
     course_end_time TIME,
     course_day TEXT,
+    PRIMARY KEY (schedule_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE timetable (
