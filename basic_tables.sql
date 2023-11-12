@@ -63,3 +63,10 @@ CREATE TABLE login_information (
     PRIMARY KEY (login_id),
     FOREIGN KEY (student_id) REFERENCES students(student_id)
 );
+CREATE TABLE face_recognition(
+    recog_id INT AUTO_INCREMENT,
+    student_id INT,
+    file_path TEXT,
+    PRIMARY KEY (recog_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id)
+);
