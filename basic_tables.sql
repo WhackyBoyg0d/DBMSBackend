@@ -8,6 +8,12 @@ CREATE TABLE course (
     course_id INT AUTO_INCREMENT,
     PRIMARY KEY (course_id)
 );
+CREATE Table attends(
+    student_id INT,
+    course_id INT,
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (course_id) REFERENCES course(course_id)
+);
 CREATE TABLE teacher_message (
     message_id INT AUTO_INCREMENT,
     course_id INT,
