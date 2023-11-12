@@ -5,18 +5,19 @@ CREATE TABLE students (
     PRIMARY KEY (student_id)
 );
 CREATE TABLE course (
-    course_id INT AUTO_INCREMENT,
+    course_id VARCHAR(8),
+    course_name TEXT,
     PRIMARY KEY (course_id)
 );
 CREATE Table attends(
     student_id INT,
-    course_id INT,
+    course_id VARCHAR(8),
     FOREIGN KEY (student_id) REFERENCES students(student_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE teacher_message (
     message_id INT AUTO_INCREMENT,
-    course_id INT,
+    course_id VARCHAR(8),
     message TEXT,
     PRIMARY KEY (message_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
@@ -24,7 +25,7 @@ CREATE TABLE teacher_message (
 
 CREATE TABLE links_of_zoom (
     link_id INT AUTO_INCREMENT,
-    course_id INT,
+    course_id VARCHAR(8),
     link VARCHAR(255),
     PRIMARY KEY (link_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
@@ -32,14 +33,14 @@ CREATE TABLE links_of_zoom (
 
 CREATE TABLE tutorial_lecture_notes (
     note_id INT AUTO_INCREMENT,
-    course_id INT,
+    course_id VARCHAR(8),
     note TEXT,
     PRIMARY KEY (note_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
 CREATE TABLE course_schedule (
     schedule_id INT AUTO_INCREMENT,
-    course_id INT,
+    course_id VARCHAR(8),
     course_time TIME,
     course_date DATE,
     PRIMARY KEY (schedule_id),
