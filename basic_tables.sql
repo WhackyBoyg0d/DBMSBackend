@@ -7,6 +7,7 @@ CREATE TABLE students (
 CREATE TABLE course (
     course_id VARCHAR(8),
     course_name TEXT,
+    course_description TEXT,
     PRIMARY KEY (course_id)
 );
 CREATE Table attends(
@@ -56,9 +57,10 @@ CREATE TABLE timetable (
 CREATE TABLE login_information (
     login_id INT AUTO_INCREMENT,
     student_id INT,
-    login_time DATETIME,
-    logout_time DATETIME,
-    welcome_message VARCHAR(255) DEFAULT 'Welcome back to our platform!',
+    login_time VARCHAR(255),
+    logout_time VARCHAR(255),
+    session_time VARCHAR(255),
+    welcome_message VARCHAR(255) DEFAULT 'We are happy to see you again !',
     PRIMARY KEY (login_id),
     FOREIGN KEY (student_id) REFERENCES students(student_id)
 );
