@@ -2,6 +2,7 @@ CREATE TABLE students (
     student_id INT AUTO_INCREMENT,
     name VARCHAR(100),
     email_address VARCHAR(100),
+    password VARCHAR(100),
     PRIMARY KEY (student_id)
 );
 CREATE TABLE course (

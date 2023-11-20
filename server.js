@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const { log } = require('console');
+const {spawn} = require('child_process');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -13,6 +15,8 @@ var connection = mysql.createConnection({
       password: 'Aditya0406',
       database: 'icms'
 })
+
+// const childPython = spawn('C:/Users/Aditya/miniconda3/envs/face/python', ['faces.py']);
 
 function calculateDuration(startTime, endTime) {
   const startDateTime = new Date(startTime);
@@ -31,7 +35,6 @@ function calculateDuration(startTime, endTime) {
   return formattedDuration;
 }
 
-
 app.get("/", (req, res) => {
     let sql = "SELECT * FROM students";
     connection.query(sql, (err, result) => {
@@ -41,14 +44,31 @@ app.get("/", (req, res) => {
     })
 })
 
+app.get("/loginInfo", (req, res) => {  
+  const childPython = spawn('C:/Users/Aditya/miniconda3/envs/face/python', ['faces.py']);
+  // node
+  childPython.stdout.on('data', (data) => {
+    res.send(data.toString());
+  });
+
+  childPython.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+  childPython.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
+
+})
+
 app.get("/login", (req, res) => {
   console.log(req.query);
   const  email  = req.query.email;
+  const password  = req.query.password;
   console.log(email);  
   let sql = "SELECT * FROM students WHERE email_address = '" + email + "'";
   connection.query(sql, (err, result) => {
     if (err) throw err;
-    if (result.length > 0) {
+    if (result.length > 0 && result[0].password === password) {
       // Email exists in the students table, user is logged in successfully
       res.send(result);
     } else {
@@ -118,6 +138,8 @@ app.get("/courseInfo", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
 
 
 

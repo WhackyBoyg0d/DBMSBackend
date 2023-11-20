@@ -1,0 +1,2 @@
+Database connection successful
+('Hello ', {'email': 'aditya42@connect.hku.hk', 'password': 'XyZ78$Abc'}, 'You did attendance today', "['faces.py']")
