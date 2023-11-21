@@ -37,12 +37,12 @@ CREATE TABLE tutorial_lecture_notes (
     PRIMARY KEY (note_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
-CREATE TABLE course_schedule (
+CREATE TABLE courses_schedule (
     schedule_id INT AUTO_INCREMENT,
     course_id VARCHAR(8),
-    course_start_time TIME,
-    course_end_time TIME,
-    course_day TEXT,
+    course_start_date VARCHAR(255),
+    course_end_date VARCHAR(255),
+    recurrenceRule TEXT,
     PRIMARY KEY (schedule_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );
@@ -52,7 +52,7 @@ CREATE TABLE timetable (
     schedule_id INT,
     PRIMARY KEY (timetable_id),
     FOREIGN KEY (student_id) REFERENCES students(student_id),
-    FOREIGN KEY (schedule_id) REFERENCES course_schedule(schedule_id),
+    FOREIGN KEY (schedule_id) REFERENCES courses_schedule(schedule_id),
     UNIQUE KEY (student_id, schedule_id)
 );
 CREATE TABLE login_information (

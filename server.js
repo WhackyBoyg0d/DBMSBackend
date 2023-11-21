@@ -13,7 +13,7 @@ var connection = mysql.createConnection({
       port: '3307',
       user: 'root',
       password: 'Aditya0406',
-      database: 'icms'
+      database: 'icms2'
 })
 
 // const childPython = spawn('C:/Users/Aditya/miniconda3/envs/face/python', ['faces.py']);
@@ -138,6 +138,59 @@ app.get("/courseInfo", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+app.get("/timetable", async (req, res) => {
+  try {
+    const studentId = req.query.student_id;
+    console.log(studentId)
+
+    const getScheduleIds = () => {
+      return new Promise((resolve, reject) => {
+        const sql = "SELECT schedule_id FROM timetable WHERE student_id = ?";
+        connection.query(sql, [studentId], (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    };
+
+    const getSchedules = (scheduleId) => {
+      return new Promise((resolve, reject) => {
+        const sql = "SELECT * FROM courses_schedule WHERE schedule_id = ?";
+        connection.query(sql, [scheduleId], (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    };
+
+    const courseIds = await getScheduleIds();
+
+    const timetablePromises = courseIds.map((row) => {
+      console.log(row);
+      return getSchedules(row.schedule_id);
+    });
+
+    const timetable = await Promise.all(timetablePromises);
+    console.log(timetable);
+    const dataSource = timetable.map((row) => {
+      return {
+        key: row[0].schedule_id,
+        text: row[0].course_id,
+        startDate: new Date(row[0].course_start_date),
+        endDate: new Date(row[0].course_end_date),
+        recurrenceRule: row[0].recurrenceRule,
+      };
+    });
+
+    res.send(dataSource);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 
 
 

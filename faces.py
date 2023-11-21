@@ -17,7 +17,7 @@ myconn = mysql.connector.connect(host='localhost',
                                  port='3307',
                                  user='root',
                                  password='Aditya0406',
-                                 database='icms')
+                                 database='icms2')
 date = datetime.utcnow()
 now = datetime.now()
 current_time = now.strftime("%H:%M:%S")
@@ -56,7 +56,7 @@ while a == 1:
         id_, conf = recognizer.predict(roi_gray)
 
         # If the face is recognized
-        if conf >= 40:
+        if conf >= 50:
             # print(id_)
             # print(labels[id_])
             # print("test", sys.argv)
