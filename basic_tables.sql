@@ -43,6 +43,7 @@ CREATE TABLE courses_schedule (
     course_start_date VARCHAR(255),
     course_end_date VARCHAR(255),
     recurrenceRule TEXT,
+    classroom_address VARCHAR(255),
     PRIMARY KEY (schedule_id),
     FOREIGN KEY (course_id) REFERENCES course(course_id)
 );

@@ -35,6 +35,31 @@ function calculateDuration(startTime, endTime) {
   return formattedDuration;
 }
 
+function results(lecture)  { lecture.map(dateString => {
+  const currentDate = new Date(); // Get the current date and time
+    const date = new Date(dateString.startDate); // Parse the date from the array
+
+    // Check if the date is on the same day as today
+    if (
+      date.getDate() === currentDate.getDate() &&
+      date.getMonth() === currentDate.getMonth() &&
+      date.getFullYear() === currentDate.getFullYear()
+    ) {
+      // Calculate the time difference in milliseconds
+      const timeDiff = Math.abs(date.getTime() - currentDate.getTime());
+
+      // Check if the time difference is within 1 hour (3600000 milliseconds)
+      if (timeDiff <= 3600000) {
+        return dateString;
+      } else {
+        
+      }
+    } else {
+      
+    }
+    return null;
+  })};
+
 app.get("/", (req, res) => {
     let sql = "SELECT * FROM students";
     connection.query(sql, (err, result) => {
@@ -164,6 +189,38 @@ app.get("/timetable", async (req, res) => {
       });
     };
 
+    // const getZoomLink = (courseId) => {
+    //   return new Promise((resolve, reject) => {
+    //     const sql = "SELECT * FROM links_of_zoom WHERE course_id = ?";
+    //     connection.query(sql, [courseId], (err, result) => {
+    //       if (err) reject(err);
+    //       resolve(result[0]);
+    //     });
+    //   });
+    // }
+
+    // const teacherMessage = (courseId) => {
+    //   return new Promise((resolve, reject) => {
+    //     const sql = "SELECT * FROM teacher_message WHERE course_id = ?";
+    //     connection.query(sql, [courseId], (err, result) => {
+    //       if (err) reject(err);
+    //       resolve(result[0]);
+    //     });
+    //   });
+    // }
+
+    // const tutorialLectureNotes = (courseId) => {
+    //   return new Promise((resolve, reject) => {
+    //     const sql = "SELECT * FROM tutorial_lecture_notes WHERE course_id = ?";
+    //     connection.query(sql, [courseId], (err, result) => {
+    //       if (err) reject(err);
+    //       resolve(result[0]);
+    //     });
+    //   });
+    // }
+
+
+    
     const courseIds = await getScheduleIds();
 
     const timetablePromises = courseIds.map((row) => {
@@ -172,16 +229,34 @@ app.get("/timetable", async (req, res) => {
     });
 
     const timetable = await Promise.all(timetablePromises);
-    console.log(timetable);
-    const dataSource = timetable.map((row) => {
+    // console.log(timetable);
+    // const infoo = timetable.map(async (row) => {
+    //   console.log(row[0].course_id)
+    //   const zoom_link = await getZoomLink(row[0].course_id);
+    //   const teacher_message = await teacherMessage(row[0].course_id);
+    //   const tutorial_lecture_notes = await tutorialLectureNotes(row[0].course_id);
+    //   return {
+    //     key: row[0].schedule_id,
+    //     zoom_link: zoom_link,
+    //     teacher_message: teacher_message,
+    //     tutorial_lecture_notes: tutorial_lecture_notes
+    //   };
+    // });
+
+    // console.log(infoo);
+
+    const dataSource = timetable.map( (row, index) => {
       return {
         key: row[0].schedule_id,
         text: row[0].course_id,
         startDate: new Date(row[0].course_start_date),
         endDate: new Date(row[0].course_end_date),
         recurrenceRule: row[0].recurrenceRule,
+        description: "Location - " + row[0].classroom_address,
+
       };
     });
+    console.log(dataSource);
 
     res.send(dataSource);
   } catch (err) {
@@ -189,6 +264,178 @@ app.get("/timetable", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+// app.get("/moreLectureInfo", async (req, res) => {
+//   const courseId = req.query.course_id;
+//   console.log(courseId);
+//   var zoom_link = "";
+//   var teacher_message = "";
+//   var tutorial_lecture_notes = "";
+//   let sql = "SELECT link FROM links_of_zoom WHERE course_id = ?";
+//   connection.query(sql, [courseId], (err, result) => {
+//     if (err) throw err;
+//     console.log(result[0]);
+//     zoom_link = result[0].link;
+//   });
+//   sql = "SELECT message FROM teacher_message WHERE course_id = ?";
+//   connection.query(sql, [courseId], (err, result) => {
+//     if (err) throw err;
+//     console.log(result[0]);
+//     teacher_message = result[0].message;
+//   });
+//   sql = "SELECT note FROM tutorial_lecture_notes WHERE course_id = ?";
+//   connection.query(sql, [courseId], (err, result) => {
+//     if (err) throw err;
+//     console.log(result[0]);
+//     tutorial_lecture_notes = result[0].notes;
+//   });
+//   setTimeout(() => {}, 1000);
+//   const info = {
+//     zoom_link: zoom_link,
+//     teacher_message: teacher_message,
+//     tutorial_lecture_notes: tutorial_lecture_notes
+//   };
+//   console.log(info);
+//   res.send(info);
+
+// });
+
+app.get("/moreLectureInfo", async (req, res) => {
+  const courseId = req.query.course_id;
+  console.log(courseId);
+
+  try {
+    const zoomLinkPromise = new Promise((resolve, reject) => {
+      const sql = "SELECT link FROM links_of_zoom WHERE course_id = ?";
+      connection.query(sql, [courseId], (err, result) => {
+        if (err) reject(err);
+        resolve(result[0]?.link || '');
+      });
+    });
+
+    const teacherMessagePromise = new Promise((resolve, reject) => {
+      const sql = "SELECT message FROM teacher_message WHERE course_id = ?";
+      connection.query(sql, [courseId], (err, result) => {
+        if (err) reject(err);
+        resolve(result[0]?.message || '');
+      });
+    });
+
+    const tutorialLectureNotesPromise = new Promise((resolve, reject) => {
+      const sql = "SELECT note FROM tutorial_lecture_notes WHERE course_id = ?";
+      connection.query(sql, [courseId], (err, result) => {
+        if (err) reject(err);
+        resolve(result[0]?.note || '');
+      });
+    });
+
+    const [zoomLink, teacherMessage, tutorialLectureNotes] = await Promise.all([
+      zoomLinkPromise,
+      teacherMessagePromise,
+      tutorialLectureNotesPromise,
+    ]);
+
+    const info = {
+      zoom_link: zoomLink,
+      teacher_message: teacherMessage,
+      tutorial_lecture_notes: tutorialLectureNotes,
+    };
+
+    console.log(info);
+    res.send(info);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// app.get("/latestClass", async (req, res) => {
+//   try {
+//     const studentId = req.query.student_id;
+//     console.log(studentId)
+
+//     const getScheduleIds = () => {
+//       return new Promise((resolve, reject) => {
+//         const sql = "SELECT schedule_id FROM timetable WHERE student_id = ?";
+//         connection.query(sql, [studentId], (err, result) => {
+//           if (err) reject(err);
+//           resolve(result);
+//         });
+//       });
+//     };
+
+//     const getSchedules = (scheduleId) => {
+//       return new Promise((resolve, reject) => {
+//         const sql = "SELECT * FROM courses_schedule WHERE schedule_id = ?";
+//         connection.query(sql, [scheduleId], (err, result) => {
+//           if (err) reject(err);
+//           resolve(result);
+//         });
+//       });
+//     };
+
+//     const getZoomLink = (courseId) => {
+//       return new Promise((resolve, reject) => {
+//         const sql = "SELECT link FROM links_of_zoom WHERE course_id = ?";
+//         connection.query(sql, [courseId], (err, result) => {
+//           if (err) reject(err);
+//           resolve(result[0]);
+//         });
+//       });
+//     }
+
+//     const teacherMessage = (courseId) => {
+//       return new Promise((resolve, reject) => {
+//         const sql = "SELECT message FROM teacher_message WHERE course_id = ?";
+//         connection.query(sql, [courseId], (err, result) => {
+//           if (err) reject(err);
+//           resolve(result[0]);
+//         });
+//       });
+//     }
+
+//     const tutorialLectureNotes = (courseId) => {
+//       return new Promise((resolve, reject) => {
+//         const sql = "SELECT notes FROM tutorial_lecture_notes WHERE course_id = ?";
+//         connection.query(sql, [courseId], (err, result) => {
+//           if (err) reject(err);
+//           resolve(result[0]);
+//         });
+//       });
+//     }
+
+//     const courseIds = await getScheduleIds();
+
+//     const timetablePromises = courseIds.map((row) => {
+//       console.log(row);
+//       return getSchedules(row.schedule_id);
+//     });
+
+//     const timetable = await Promise.all(timetablePromises);
+//     const dataSource = timetable.map(async (row) => {
+//       const zoom_link = await getZoomLink(row[0].course_id);
+//       const teacher_message = await teacherMessage(row[0].course_id);
+//       const tutorial_lecture_notes = await tutorialLectureNotes(row[0].course_id);
+//       return {
+//         key: row[0].schedule_id,
+//         text: row[0].course_id,
+//         startDate: new Date(row[0].course_start_date),
+//         endDate: new Date(row[0].course_end_date),
+//         recurrenceRule: row[0].recurrenceRule,
+//         description: row[0].classroom_address,
+//         zoom_link: zoom_link,
+//         teacher_message: teacher_message,
+//         tutorial_lecture_notes: tutorial_lecture_notes
+//       };
+//     });
+//     console.log(dataSource);
+
+//     res.send(results(dataSource));
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 
 
